@@ -138,6 +138,7 @@ class employeeController {
       
   
     static jsondata = async(req,res)=>{
+    
       const data = await dataModals.find()
       res.send(data)
     }   
