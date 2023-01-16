@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+</head>
+<body>
+    <div id="main">
+        <div id="header"><h2>Ajax file upload functionality</h2></div>
+    <div id="content">
+        <form action="/upload" method="post" enctype="multipart/form-data" >
+            <div id="form-group">
+                <label >select</label>
+                <input type="file" name="file1" id="upload-file">
+            </div>
+                <input type="submit" name="upload-button" id="upload-button"  value="upload">
+                <input type="button" name="upload-button" id="button"  value="load">
+        </form>
+        <div id="table-data">
+
+        </div>
+      
+</div>
+</div>
+<script src="js/jquery.js"></script>
+<script>
+    $(document).ready(function(){
+        
+            $.ajax({
+                url:"/pag",
+                type: "get", 
+                success: function(data){
+                    
+                    
+                    $.each(data.data,function(key,value){
+                        $("#table-data ").append(value.id +  "  "  +value.email+ "   "+value.first_name+ "  "+value.last_name+  " <br>" )
+                    })
+                }
+            })
+           $(document).on("click","#button",function(){
+            $.ajax({
+                url: "/jsondata",
+                type: "post",
+                data : {action:'fetch'},
+                success : function(data){
+                    console.log("object",data)
+                    for(var i = 0; i<data.length; i++){
+                    $("#table-data ").append(data[i].name +  " &nbsp "  +data[i].username+ "&nbsp"+data[i].email+ " &nbsp " +data[i].phone+ "&nbsp " +data[i].website+" <br>" )
+                    }
+                }
+            })
+           })
+           
+           
+            })
+</script>
+</body>
+</html>

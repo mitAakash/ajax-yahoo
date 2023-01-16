@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> Ajax CRUD</title>
+ <link rel="stylesheet" href="css/style.css" type="text/css">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous"></head>
+<body>
+  <table id="main" border="0" cellspacing="0">
+    <tr>
+      <td id="header">
+        <h1>PHP REST API CRUD</h1>
+
+        <div id="search-bar">
+          <label>Search :</label>
+          <input type="text" id="search" autocomplete="off">
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td id="table-form">
+        <form id="addForm">
+          Name : <input type="text" name="sname" id="sname">
+          Age : <input type="number" name="sage" id="sage">
+          City : <input type="text" name="scity" id="scity">
+          <input type="submit" id="save-button" value="Save">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td id="table-data">
+        <table  width="100%" cellpadding="10px"  >
+      
+          <tbody id="load-table">
+       
+          </tbody>
+        </table>
+      
+      </td>
+    </tr>
+  </table>
+ 
+
+  <div id="error-message" class="messages"></div>
+  <div id="success-message" class="messages"></div>
+
+  <!-- Popup Modal Box for Update the Records -->
+  <form action="/UpdataData" method="post">
+  <div
+  class="modal fade"
+  id="modalEditForm"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Edit Employee form</h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3" >
+        <div class="md-form mb-5" id="name">
+          <i class="fas fa-envelope prefix grey-text"></i>
+          <label
+          data-error="wrong"
+          data-success="right"
+          for="defaultForm-email"
+          >Name</label
+        >
+         
+         
+        </div>
+
+        <div class="md-form mb-4" id="age">
+          <i class="fas fa-lock prefix grey-text"></i>
+          <label
+            data-error="wrong"
+            data-success="right"
+            for="defaultForm-pass"
+            >Age</label
+          >
+          
+          
+        </div>
+
+        <div class="md-form mb-4" id="city">
+          <i class="fas fa-lock prefix grey-text"></i>
+          <label
+            data-error="wrong"
+            data-success="right"
+            for="defaultForm-pass"
+            >City</label
+          >
+          
+          
+        </div>
+        <div class="md-form mb-4" id="aakash">
+
+        </div>
+        
+      
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+         <button class="btn btn-default" type="submit">Update</button>
+      
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<!-- Modal -->
+<form action="/delete" method="post">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Modal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+        <span aria-hidden="true">&times;</span>
+      </div>
+      <div class="modal-body" id="asd">
+       Are you sure you want to delete...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<script  src="js/jquery.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script><script> 
+$(document).ready(function(){
+onload()
+
+function onload(page){
+  $.ajax({
+    url:"/getdata",
+    type:"post",
+    data: {page_No:page},
+    success: function(data){
+
+var html =''
+if(data.data.length>0){ 
+  html+=`
+    <table width="100%" cellpadding="10px" >
+          <tr>
+            <th>Name</th>
+            <th width="50px">Age</th>
+            <th width="150px">City</th>
+            <th width="60px">Edit</th>
+            <th width="70px">Delete</th>
+          </tr>`;
+          for(var i=0;i<data.data.length;i++){
+            
+       html +=` <tbody id="load-table">
+    <tr>
+      <td>`+data.data[i].Name+`</td>
+      <td>`+data.data[i].Age+`</td>
+      <td>`+data.data[i].City+`</td>
+      <td><button class = " edit-btn edit" data-id = "`+data.data[i]._id+`" data-toggle="modal" data-target = "#modalEditForm">Edit</button> </td>
+      <td><button class = " delete-btn delete" data-id = "`+data.data[i]._id+`"  data-target="#exampleModal" data-toggle="modal">delete</button> </td>
+   
+      </tr>
+    </tbody>
+    </table>  
+    `;
+  }
+  html +=`  <div id="pagination"  >`
+  for(var i =1 ;i<=data.limit; i++){
+   
+html +=` 
+ 
+          <a   href="" class="active" id="`+[i]+`">`+[i]+`</a>`
+       
+        ;
+        }
+        console.log("object",[i])
+         $("#load-table ").html(html)
+}
+
+    }
+  })
+}
+
+
+
+
+
+
+
+ $("#save-button").on("click",function(e){
+  e.preventDefault()
+   var Name = $("#sname").val()
+   var Age = $("#sage").val()
+   var City = $("#scity").val()
+  if(Name == "" || Age == "" || City == ""){
+    $("#error-message").html("All fields are required").slideDown()
+    $("#error-message").html("All fields are required").slideDown()
+  }else{ $.ajax({
+    url: "/sendData",
+    type: "post",
+    data : {name : Name,age:Age,city:City},
+  
+   
+  
+   })
+   onload();
+   $("#addForm").trigger("reset")}
+  })
+   $(document).on("click",".delete",function(){
+     var del = $(this).data("id")
+  
+   $("#asd").append('<input type="text" name="abc" value="'+del+'"/>')
+   })
+  
+$(document).on("click",".edit",function(){
+  var edit =  $(this).data("id")
+  // console.log("object",edit)
+  $.ajax({
+    url : "/edit",
+    type: "post",
+    data : {data:edit},
+    success : function(data){
+      // console.log("object",data)
+      if(data){
+        $('#name').append('  <input type="text" class="form-control validate" name="name" value = "'+data.Name+'" required  />')
+        $('#age').append('  <input type="text" class="form-control validate" name="age" value = "'+data.Age+'" required  />')
+        $('#city').append('  <input type="text" class="form-control validate" name="city" value = "'+data.City+'" required  />')
+        $('#aakash').append('  <input type="text" class="form-control validate" name="id" value = "'+edit+'" required  />')
+      }
+    }
+  })
+})
+$("#search").on("keyup",function(){
+  var search = $(this).val();
+  console.log("object",search)
+  $.ajax({
+    url: "/beta",
+    type: "post",
+    data: {action: search},
+    success : function(data){
+    
+      var html =''
+if(data.length>0){
+  for(var i=0;i<data.length;i++){
+    html+=`
+    <tr>
+      <td>`+data[i].Name+`</td>
+      <td>`+data[i].Age+`</td>
+      <td>`+data[i].City+`</td>
+      <td><button class = " edit-btn edit" data-id = "`+data[i]._id+`" data-toggle="modal" data-target = "#modalEditForm">Edit</button> </td>
+      <td><button class = " delete-btn delete" data-id = "`+data[i]._id+`"  data-target="#exampleModal" data-toggle="modal">delete</button> </td>
+   
+      </tr>
+    `;
+  }
+}
+
+     
+    $("#load-table ").html(html);
+        }
+    
+    
+      // console.log("object",data)
+     
+    
+  })
+})
+$(document).on("click","#pagination a",function(e){
+  e.preventDefault();
+  var page_No = $(this).attr("id")
+  onload(page_No)
+})
+})
+</script>
+</body>
+</html>
